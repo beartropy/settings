@@ -12,7 +12,6 @@ class BeartropySettingsServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/beartropy-settings.php', 'beartropy-settings');
 
         $this->app->singleton('beartropy-settings', function ($app) {
             return new SettingsManager();

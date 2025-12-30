@@ -2,7 +2,7 @@
     "name": "beartropy/settings",
     "description": "Dynamic settings management for Laravel with Livewire UI",
     "type": "library",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "license": "MIT",
     "authors": [
         {
