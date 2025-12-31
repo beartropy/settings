@@ -2,25 +2,27 @@
 
 namespace Beartropy\Settings\Livewire;
 
-use Livewire\Component;
-use Livewire\Attributes\Computed;
-use Beartropy\Settings\Facades\BeartropySettings;
+use Beartropy\Tables\YATBaseTable;
+use Beartropy\Tables\Classes\Columns\Column;
+use Beartropy\Settings\Models\Setting;
+use Livewire\Attributes\On;
 
-class SettingsManager extends Component
+class SettingsManager extends YATBaseTable
 {
+    public $model = Setting::class;
+
+    // Form fields
     public $showModal = false;
     public $isEditing = false;
     public $editingId = null;
-    public $settingValues = [];
 
-    // Form fields
     public $group = 'general';
     public $key = '';
     public $label = '';
     public $value = '';
     public $type = 'text';
     public $description = '';
-    public $options = ''; // JSON string or comma separated? Let's use JSON for now or line separated
+    public $settingOptions = '';
 
     protected $rules = [
         'group' => 'required|string',
@@ -29,39 +31,67 @@ class SettingsManager extends Component
         'type' => 'required|in:text,boolean,toggle,number,textarea,select,json',
         'value' => 'nullable',
         'description' => 'nullable|string',
-        'options' => 'nullable', // Validation depends on type
+        'settingOptions' => 'nullable',
     ];
 
-    public function mount()
+    public function settings()
     {
-        $this->loadSettings();
+        $this->setTitle('Settings Manager');
+        $this->setModalsView('beartropy-settings::livewire.partials.settings-modals');
+        $this->showColumnToggle(false);
+        $this->showCardsOnMobile(true);
+        $this->addButtons([
+            [
+                'label' => 'Create Setting',
+                'action' => 'create',
+                'icon' => 'plus',
+                'color' => 'emerald',
+            ]
+        ]);
     }
 
-    #[Computed]
-    public function groups()
+    public function columns()
     {
-        return \Beartropy\Settings\Models\Setting::orderBy('group')->orderBy('key')->get()->groupBy('group');
-    }
+        return [
+            Column::make('group')
+                ->sortable()
+                ->searchable()
+                ->showOnCard(),
 
-    public function loadSettings()
-    {
-        $settings = \Beartropy\Settings\Models\Setting::all();
+            Column::make('key')
+                ->sortable()
+                ->searchable()
+                ->editable()
+                ->cardTitle(),
 
-        foreach ($settings as $setting) {
-            $this->settingValues[$setting->id] = $setting->value;
-        }
+            Column::make('value')
+                ->searchable()
+                ->showOnCard()
+                ->editable(),
+
+            Column::make('type')
+                ->sortable()
+                ->showOnCard(),
+
+            Column::make('is_system')
+                ->hideWhen(true)
+                ->showOnCard(),
+
+            Column::make('Actions')
+                ->view('beartropy-settings::partials.settings-actions')->pushRight(),
+        ];
     }
 
     public function create()
     {
-        $this->reset(['group', 'key', 'label', 'value', 'type', 'description', 'options', 'editingId']);
+        $this->reset(['group', 'key', 'label', 'value', 'type', 'description', 'settingOptions', 'editingId']);
         $this->isEditing = false;
         $this->showModal = true;
     }
 
     public function edit($id)
     {
-        $setting = \Beartropy\Settings\Models\Setting::findOrFail($id);
+        $setting = Setting::findOrFail($id);
 
         $this->editingId = $setting->id;
         $this->group = $setting->group;
@@ -70,7 +100,7 @@ class SettingsManager extends Component
         $this->value = $setting->value;
         $this->type = $setting->type;
         $this->description = $setting->description;
-        $this->options = $setting->options ? json_encode($setting->options, JSON_PRETTY_PRINT) : '';
+        $this->settingOptions = $setting->options ? json_encode($setting->options, JSON_PRETTY_PRINT) : '';
 
         $this->isEditing = true;
         $this->showModal = true;
@@ -87,66 +117,35 @@ class SettingsManager extends Component
             'value' => $this->value,
             'type' => $this->type,
             'description' => $this->description,
-            'options' => $this->options ? json_decode($this->options, true) : null,
+            'options' => $this->settingOptions ? json_decode($this->settingOptions, true) : null,
         ];
 
         if ($this->isEditing) {
-            $setting = \Beartropy\Settings\Models\Setting::findOrFail($this->editingId);
+            $setting = Setting::findOrFail($this->editingId);
             $setting->update($data);
-
-            $this->dispatch('beartropy-toast', ['type' => 'success', 'message' => 'Setting updated successfully.']);
+            $this->dispatch('beartropy-toast', type: 'success', message: 'Setting updated successfully.');
         } else {
-            \Beartropy\Settings\Models\Setting::create($data);
-            $this->dispatch('beartropy-toast', ['type' => 'success', 'message' => 'Setting created successfully.']);
+            Setting::create($data);
+            $this->dispatch('beartropy-toast', type: 'success', message: 'Setting created successfully.');
         }
 
         $this->showModal = false;
-        $this->loadSettings();
-    }
 
-    public function updatedSettingValues($value, $id)
-    {
-        $this->updateValue($id, $value);
-    }
-
-    public function updateValue($id, $value = null)
-    {
-        $setting = \Beartropy\Settings\Models\Setting::findOrFail($id);
-
-        // Use provided value or fallback to bound property
-        $newValue = $value ?? $this->settingValues[$id];
-
-        $setting->value = $newValue;
-        $setting->save();
-
-        // Ensure local state matches
-        $this->settingValues[$id] = $newValue;
-
-        $this->dispatch('beartropy-toast', ['type' => 'success', 'message' => 'Setting value saved.']);
-        $this->dispatch('setting-saved', id: $id);
-    }
-
-    public function saveSettingValue($id)
-    {
-        $this->updateValue($id);
+        // Refresh table data
+        $this->refresh();
     }
 
     public function delete($id)
     {
-        $setting = \Beartropy\Settings\Models\Setting::findOrFail($id);
+        $setting = Setting::findOrFail($id);
 
         if ($setting->is_system) {
-            $this->dispatch('beartropy-toast', ['type' => 'error', 'message' => 'Cannot delete system settings.']);
+            $this->dispatch('beartropy-toast', type: 'error', message: 'Cannot delete system settings.');
             return;
         }
 
         $setting->delete();
-        $this->loadSettings();
-        $this->dispatch('beartropy-toast', ['type' => 'success', 'message' => 'Setting deleted.']);
-    }
-
-    public function render()
-    {
-        return view('beartropy-settings::livewire.settings-manager');
+        $this->dispatch('beartropy-toast', type: 'success', message: 'Setting deleted.');
+        $this->refresh();
     }
 }

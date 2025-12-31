@@ -1,19 +1,29 @@
 <?php
 
-if (! function_exists('setting')) {
+if (! function_exists('get_setting')) {
     /**
-     * Get or set a setting value.
+     * Get a setting value.
      *
-     * @param  string|null  $key
+     * @param  string  $key
      * @param  mixed  $default
-     * @return mixed|\Beartropy\Settings\Contracts\SettingsStorage
+     * @return mixed
      */
-    function setting($key = null, $default = null)
+    function get_setting($key, $default = null)
     {
-        if (is_null($key)) {
-            return app('beartropy-settings');
-        }
-
         return app('beartropy-settings')->get($key, $default);
+    }
+}
+
+if (! function_exists('set_setting')) {
+    /**
+     * Set a setting value.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return void
+     */
+    function set_setting($key, $value = null)
+    {
+        app('beartropy-settings')->set($key, $value);
     }
 }

@@ -27,14 +27,6 @@ Beartropy Settings is a robust Laravel package designed to manage dynamic applic
     php artisan migrate
     ```
 
-3.  **Publish Configuration (Optional)**:
-
-    Publish the configuration file to define your available settings structure.
-
-    ```bash
-    php artisan vendor:publish --tag=beartropy-settings-config
-    ```
-
 ## Configuration
  
 Unlike traditional packages that use a config file, **Beartropy Settings** is fully database-driven. This means both the *values* and the *definitions* (labels, types, options) of your settings are stored in the database.
@@ -61,16 +53,16 @@ You can define settings in two ways:
  
 ## Usage
  
-### Helper Function
+### Helper Functions
  
-The global `setting()` helper is the easiest way to interact with settings.
+The global `get_setting()` and `set_setting()` helpers are the easiest way to interact with settings.
  
 ```php
 // Get a value (returns default if not set)
-$name = setting('site.name', 'Default Name');
+$name = get_setting('site.name', 'Default Name');
  
 // Set a value
-setting('site.name', 'New App Name');
+set_setting('site.name', 'New App Name');
 ```
  
 ### Facade
@@ -99,7 +91,7 @@ Settings are cached forever using the `beartropy_settings` cache tag (if your ca
 ## Usage Limitations
 
 ### Configuration Files
-You **cannot** use the `setting()` helper inside files in the `/config` directory (e.g., `config/services.php`). Laravel loads configuration files before the database connection is established. Attempting to use database-driven settings here will result in an error.
+You **cannot** use the `get_setting()` helper inside files in the `/config` directory (e.g., `config/services.php`). Laravel loads configuration files before the database connection is established. Attempting to use database-driven settings here will result in an error.
 
 **Correct Approach**:
 Use `config()` for static values, or set configuration values dynamically in a Service Provider's `boot` method:
@@ -111,14 +103,14 @@ public function boot()
 {
     // Override config values with database settings safely
     if (Schema::hasTable('beartropy_settings')) {
-        config(['app.name' => setting('site.name', config('app.name'))]);
+        config(['app.name' => get_setting('site.name', config('app.name'))]);
     }
 }
 ```
 
 ### Service Providers
-- **`register()` method**: Avoid using `setting()` here, as the database connection might not be fully initialized or other services might not be ready.
-- **`boot()` method**: This is the **recommended** place to use `setting()` if you need to configure services dynamically based on database settings.
+- **`register()` method**: Avoid using `get_setting()` here, as the database connection might not be fully initialized or other services might not be ready.
+- **`boot()` method**: This is the **recommended** place to use `get_setting()` if you need to configure services dynamically based on database settings.
 
 ## User Interface
  

@@ -25,14 +25,18 @@ class Setting extends Model
         'options' => 'array',
     ];
 
-    protected static function booted()
+    protected static function boot()
     {
+        parent::boot();
+
         static::saved(function ($setting) {
+            Cache::forget('beartropy_settings.setting.' . $setting->group . '.' . $setting->key);
             Cache::forget('beartropy_settings.setting.' . $setting->key);
             Cache::forget('beartropy_settings.settings.all');
         });
 
         static::deleted(function ($setting) {
+            Cache::forget('beartropy_settings.setting.' . $setting->group . '.' . $setting->key);
             Cache::forget('beartropy_settings.setting.' . $setting->key);
             Cache::forget('beartropy_settings.settings.all');
         });
