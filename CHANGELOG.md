@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2025-12-31
+### Added
+- Standard PHP DocBlocks to all functions and classes for better IDE support and code clarity.
+
 ## [1.0.5] - 2025-12-31
 ### Changed
 - displayed 'True'/'False' for boolean and toggle setting types in the manager.
