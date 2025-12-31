@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.5] - 2025-12-31
+### Changed
+- displayed 'True'/'False' for boolean and toggle setting types in the manager.
+
 ## [1.0.4] - 2025-12-31
 ### Changed
 - Improved searchability for setting values (handles both select and input types).
