@@ -67,6 +67,8 @@ class SettingsManager extends YATBaseTable
                 ->customData(function ($row) {
                     if ($row->type == "select") {
                         return $row->options[$row->value] ?? $row->value;
+                    } elseif ($row->type == "boolean" || $row->type == "toggle") {
+                        return $row->value ? 'True' : 'False';
                     }
                     return $row->value;
                 })
