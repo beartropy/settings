@@ -7,10 +7,27 @@ use Beartropy\Settings\Models\Setting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Class SettingsManager.
+ *
+ * Manages the retrieval and storage of settings using the database and cache.
+ */
 class SettingsManager implements SettingsStorage
 {
+    /**
+     * The cache tag used for settings.
+     *
+     * @var string
+     */
     protected $cacheTag = 'beartropy_settings';
 
+    /**
+     * Get a setting value.
+     *
+     * @param  string  $key     The setting key.
+     * @param  mixed   $default The default value.
+     * @return mixed
+     */
     public function get(string $key, $default = null): mixed
     {
         if (! $this->databaseHasTable()) {
@@ -29,6 +46,13 @@ class SettingsManager implements SettingsStorage
         });
     }
 
+    /**
+     * Set a setting value.
+     *
+     * @param  string  $key   The setting key.
+     * @param  mixed   $value The setting value.
+     * @return void
+     */
     public function set(string $key, $value = null): void
     {
         if (! $this->databaseHasTable()) {
@@ -53,11 +77,22 @@ class SettingsManager implements SettingsStorage
         // Model events handle cache clearing
     }
 
+    /**
+     * Check if a setting exists.
+     *
+     * @param  string $key The setting key.
+     * @return bool
+     */
     public function has(string $key): bool
     {
         return $this->get($key, '__NOT_FOUND__') !== '__NOT_FOUND__';
     }
 
+    /**
+     * Get all settings.
+     *
+     * @return array
+     */
     public function all(): array
     {
         return Cache::rememberForever("{$this->cacheTag}.settings.all", function () {
@@ -67,6 +102,11 @@ class SettingsManager implements SettingsStorage
         });
     }
 
+    /**
+     * Check if the settings table exists in the database.
+     *
+     * @return bool
+     */
     protected function databaseHasTable(): bool
     {
         // Prevent crashes during migrations or before setup
@@ -77,6 +117,12 @@ class SettingsManager implements SettingsStorage
         }
     }
 
+    /**
+     * Infer the type of a value.
+     *
+     * @param  mixed  $value
+     * @return string
+     */
     protected function inferType($value): string
     {
         if (is_bool($value)) return 'boolean';

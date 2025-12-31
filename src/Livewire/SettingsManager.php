@@ -7,21 +7,49 @@ use Beartropy\Tables\Classes\Columns\Column;
 use Beartropy\Settings\Models\Setting;
 use Livewire\Attributes\On;
 
+/**
+ * Class SettingsManager.
+ *
+ * Livewire component for managing application settings.
+ */
 class SettingsManager extends YATBaseTable
 {
+    /**
+     * The model class used by this component.
+     *
+     * @var string
+     */
     public $model = Setting::class;
 
     // Form fields
+    /** @var bool Whether to show the modal. */
     public $showModal = false;
+
+    /** @var bool Whether we are in editing mode. */
     public $isEditing = false;
+
+    /** @var int|null The ID of the setting being edited. */
     public $editingId = null;
 
+    /** @var string The setting group. */
     public $group = 'general';
+
+    /** @var string The setting key. */
     public $key = '';
+
+    /** @var string The setting label. */
     public $label = '';
+
+    /** @var string The setting value. */
     public $value = '';
+
+    /** @var string The setting type. */
     public $type = 'text';
+
+    /** @var string The setting description. */
     public $description = '';
+
+    /** @var string The setting options (JSON). */
     public $settingOptions = '';
 
     protected $rules = [
@@ -34,6 +62,11 @@ class SettingsManager extends YATBaseTable
         'settingOptions' => 'nullable',
     ];
 
+    /**
+     * Configure the table settings.
+     *
+     * @return void
+     */
     public function settings()
     {
         $this->setTitle('Settings Manager');
@@ -50,6 +83,11 @@ class SettingsManager extends YATBaseTable
         ]);
     }
 
+    /**
+     * Define the table columns.
+     *
+     * @return array
+     */
     public function columns()
     {
         return [
@@ -106,6 +144,11 @@ class SettingsManager extends YATBaseTable
         ];
     }
 
+    /**
+     * Show the modal to create a new setting.
+     *
+     * @return void
+     */
     public function create()
     {
         $this->reset(['group', 'key', 'label', 'value', 'type', 'description', 'settingOptions', 'editingId']);
@@ -113,6 +156,12 @@ class SettingsManager extends YATBaseTable
         $this->showModal = true;
     }
 
+    /**
+     * Show the modal to edit an existing setting.
+     *
+     * @param  int  $id
+     * @return void
+     */
     public function edit($id)
     {
         $setting = Setting::findOrFail($id);
@@ -130,6 +179,11 @@ class SettingsManager extends YATBaseTable
         $this->showModal = true;
     }
 
+    /**
+     * Save the setting.
+     *
+     * @return void
+     */
     public function save()
     {
         $this->validate();
@@ -159,6 +213,12 @@ class SettingsManager extends YATBaseTable
         $this->refresh();
     }
 
+    /**
+     * Delete a setting.
+     *
+     * @param  int  $id
+     * @return void
+     */
     public function delete($id)
     {
         $setting = Setting::findOrFail($id);

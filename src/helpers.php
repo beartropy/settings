@@ -4,8 +4,8 @@ if (! function_exists('get_setting')) {
     /**
      * Get a setting value.
      *
-     * @param  string  $key
-     * @param  mixed  $default
+     * @param  string  $key     The setting key (e.g., 'group.key' or 'key').
+     * @param  mixed   $default The default value if the setting does not exist.
      * @return mixed
      */
     function get_setting($key, $default = null)
@@ -18,8 +18,8 @@ if (! function_exists('set_setting')) {
     /**
      * Set a setting value.
      *
-     * @param  string  $key
-     * @param  mixed  $value
+     * @param  string  $key   The setting key (e.g., 'group.key' or 'key').
+     * @param  mixed   $value The value to set.
      * @return void
      */
     function set_setting($key, $value = null)

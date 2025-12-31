@@ -10,6 +10,11 @@ use Livewire\Livewire;
 
 class BeartropySettingsServiceProvider extends ServiceProvider
 {
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
     public function register()
     {
 
@@ -20,6 +25,11 @@ class BeartropySettingsServiceProvider extends ServiceProvider
         $this->app->bind(SettingsStorage::class, 'beartropy-settings');
     }
 
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
     public function boot()
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
