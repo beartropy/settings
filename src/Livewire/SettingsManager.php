@@ -61,13 +61,35 @@ class SettingsManager extends YATBaseTable
             Column::make('key')
                 ->sortable()
                 ->searchable()
-                ->editable()
                 ->cardTitle(),
 
             Column::make('value')
-                ->searchable()
-                ->showOnCard()
-                ->editable(),
+                ->customData(function ($row) {
+                    if ($row->type == "select") {
+                        return $row->options[$row->value] ?? $row->value;
+                    }
+                    return $row->value;
+                })
+                ->searchable(function ($query, $searchTerm) {
+                    $query->orWhere(function ($q) use ($searchTerm) {
+                        $q->where('value', 'like', "%{$searchTerm}%");
+
+                        if (\config('database.default') === 'sqlite') {
+                            $q->orWhereRaw("json_extract(options, '$.' || \"value\") LIKE ?", ["%{$searchTerm}%"]);
+                        } else {
+                            $q->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(options, CONCAT('$.', `value`)))) LIKE ?", ["%" . strtolower($searchTerm) . "%"]);
+                        }
+                    });
+                })
+                ->sortable(function ($query, $direction) {
+                    if (\config('database.default') === 'sqlite') {
+                        $sql = "COALESCE(json_extract(options, '$.' || \"value\"), value)";
+                    } else {
+                        $sql = "COALESCE(JSON_UNQUOTE(JSON_EXTRACT(options, CONCAT('$.', `value`))), `value`)";
+                    }
+                    $query->orderByRaw("$sql $direction");
+                })
+                ->showOnCard(),
 
             Column::make('type')
                 ->sortable()

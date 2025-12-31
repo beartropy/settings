@@ -37,28 +37,12 @@ class SettingsManager implements SettingsStorage
 
         [$group,] = explode('.', $key, 2) + ['default', null];
 
-        // If key doesn't have a dot, we assume group is default or we need to look it up from config if we want to enforce schema.
-        // For now, we'll try to find existing or create new.
-        // To properly support "group.key", we might need to parse.
-        // Let's assume the key passed here IS the key in the database (which might contain dots or might not).
-        // The prompt says "group.key", so usually `group` is a column and `key` is a column.
-        // However, standard key-value stores usually flatten this.
-        // Use the prompt's `key` field as unique.
-        // We will store the full key in the `key` column for simplicity of retrieval, 
-        // OR we split it. The prompt asked for: "key (string), group (string)".
-        // Let's assume the argument `$key` in `get('group.key')` maps to `group`='group' and `key`='key'.
-
-        // Re-reading prompt: "get('group.key', $default)".
-        // So we need to parse the dot notation.
-
         $parts = explode('.', $key);
         $groupStr = count($parts) > 1 ? array_shift($parts) : 'default';
         $keyStr = implode('.', $parts);
 
         $setting = Setting::firstOrNew(['key' => $keyStr, 'group' => $groupStr]);
 
-        // If it's new, we might need to infer type or set it to string default. 
-        // For dynamic setting, let's guess type from value if it's new.
         if (! $setting->exists && ! $setting->type) {
             $setting->type = $this->inferType($value);
         }
