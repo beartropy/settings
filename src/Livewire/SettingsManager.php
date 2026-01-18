@@ -81,6 +81,7 @@ class SettingsManager extends YATBaseTable
                 'color' => 'emerald',
             ]
         ]);
+        $this->sortBy('group', 'asc');
     }
 
     /**
@@ -140,7 +141,9 @@ class SettingsManager extends YATBaseTable
                 ->showOnCard(),
 
             Column::make('Actions')
-                ->view('beartropy-settings::partials.settings-actions')->pushRight(),
+                ->view('beartropy-settings::partials.settings-actions')->pushRight()
+                ->searchable(false)
+                ->sortable(false),
         ];
     }
 
