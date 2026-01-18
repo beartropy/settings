@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2026-01-18
+### Changed
+- Improved sort order in SettingsManager (now sorted by group by default).
+- Small UI fixes in settings table actions.
+
 ## [1.1.0] - 2025-12-31
 ### Added
 - Standard PHP DocBlocks to all functions and classes for better IDE support and code clarity.
