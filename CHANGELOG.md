@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2026-02-01
+### Changed
+- Updated `livewire/livewire` dependency to allow `^4.0`.
+
 ## [1.1.1] - 2026-01-18
 ### Changed
 - Improved sort order in SettingsManager (now sorted by group by default).
