@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.3] - 2026-04-07
+
+### Changed
+- Added Laravel 13 support (`illuminate/support: ^13.0`)
+
 ## [1.1.2] - 2026-02-01
 ### Changed
 - Updated `livewire/livewire` dependency to allow `^4.0`.
