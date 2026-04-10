@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.4] - 2026-04-10
+
+### Added
+- **Docs**: AI assistant documentation (`docs/components/`, `docs/llms/`, `docs/ai-assistants/`) with API reference, usage examples, AI reference, cursor rules, and code examples.
+- **Skills**: Claude Code skills (`bt-settings-setup`, `bt-settings-component`) and `skills.json` manifest for the `beartropy:skills` installer command.
+
 ## [1.1.3] - 2026-04-07
 
 ### Changed

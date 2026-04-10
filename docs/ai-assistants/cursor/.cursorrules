@@ -1,0 +1,40 @@
+# Beartropy Settings - Cursor Rules
+
+## Project Context
+This project uses **Beartropy Settings**, a database-backed settings management package for Laravel.
+
+## API Usage
+
+```php
+use Beartropy\Settings\Facades\BeartropySettings;
+
+# Read
+BeartropySettings::get('key', 'default');
+get_setting('key', 'default');
+
+# Write
+BeartropySettings::set('key', 'value');
+set_setting('key', 'value');
+
+# Check
+BeartropySettings::has('key');
+
+# All
+BeartropySettings::all();
+```
+
+## Dot Notation
+- `'app.name'` → group: `app`, key: `name`
+- `'theme'` → group: `general`, key: `theme`
+
+## Livewire UI
+```blade
+@livewire('beartropy-settings-manager')
+```
+
+## Best Practices
+- Use `get_setting()` helper in Blade templates for readability
+- Use `BeartropySettings` facade in PHP classes
+- Group related settings with dot notation: `mail.from`, `mail.host`
+- Use `config()` as fallback: `get_setting('app.name', config('app.name'))`
+- Settings are cached forever — no performance concern for reads
